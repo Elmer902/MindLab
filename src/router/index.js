@@ -1,23 +1,59 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import communityView from '@/views/communityView.vue';
+import HealthView from '@/components/Health.vue';
+import mealView from '@/views/mealView.vue';
+import subscribeView from '@/views/subscribeView.vue';
+import homeView from '@/views/HomeView.vue';
+import signIn from '@/components/signIn.vue';
+import mealPlanView from '@/views/mealPlanView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView,
+      path: '/dashboard',
+      name: 'dashboard',
+      component: HealthView,
+      meta: { showSidebar: true }
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/mealplan',
+      name: 'mealplanview',
+      component: mealPlanView,
+      meta: { showSidebar: true }
+    },
+    {
+      path: '/signin',
+      name: 'signin',
+      component: signIn,
+      meta: { showSidebar: false }
+    },
+    {
+      path: '/',
+      name: 'home',
+      component: homeView,
+      meta: { showSidebar: false }
+    },
+    {
+      path: '/meal',
+      name: 'MealPlans',
+      component: mealView,
+      meta: { showSidebar: true }
+    },
+    {
+      path: '/subscriptions',
+      name: 'subscriptions',
+      component: subscribeView,
+      meta: { showSidebar: true }
+    },
+    {
+      path: '/community',
+      name: 'community',
+      component: communityView,
+      meta: { showSidebar: true }
     },
   ],
 })
 
-export default router
+
+export default router;
