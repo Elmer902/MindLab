@@ -4,6 +4,7 @@
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import heu from '@/assets/heu.png';
+import logo from '@/assets/logo.png';
 
 const email = ref('');
 const password = ref('');
@@ -25,17 +26,18 @@ const handleLogin = () => {
 }
 </style>
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-300 px-4">
+  <div class="flex min-h-screen py-10 items-center justify-center bg-green-100 px-4">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex flex-col md:flex-row">
       <!-- Left Side - Illustration -->
       <div class="hidden md:flex md:w-1/2 bg-gray-900 p-8 flex-col justify-center items-center">
-        <span class="flex text-white text-5xl font-bold"><h1 class="text-green-800">Mind</h1>Lab</span>
+        <img :src="logo" alt="">
+
         <img :src="heu" alt="Illustration" class="w-full max-w-sm">
       </div>
 
       <!-- Right Side - Login Form -->
       <div class="w-full md:w-1/2 p-8">
-        <span class="flex md:hidden  text-gray-400 text-center justify-center pb-4 text-5xl font-bold"><h1 class="text-green-800">Mind</h1>Lab</span>
+        <img :src="logo" alt="" class="md:px-44 md:hidden flex px-20">
         <h2 class="text-2xl font-semibold text-gray-700 text-center">Log in</h2>
 
         <form @submit.prevent="handleLogin" class="mt-6">
@@ -67,9 +69,9 @@ const handleLogin = () => {
         <div class="mt-6 text-center">
           <p class="text-gray-600">Or Login with</p>
           <div class="flex justify-center text-center space-x-3 mt-2">
-            <button class="bg-red-500 text-white px-4 py-2 rounded-md"><i class="pi pi-google px-2 py-1"></i>Google</button>
+            <button class="border bg-green-800 text-white px-4 py-2 rounded-md font-semibold"><i class="pi pi-google px-2 py-1"></i>Google</button>
             <button class="bg-blue-600 text-white px-4 py-2 rounded-md"><i class="pi pi-facebook px-2 py-1"></i>Facebook</button>
-            <button class="bg-gray-900 text-white px-4 py-2 rounded-md"> <i class="pi pi-github px-2 py-1"></i>Github</button>
+            <button class="bg-gray-900 text-white px-4 py-2 rounded-md"> <i class="pi pi-linkedin px-2 py-1"></i>Linkedin</button>
           </div>
         </div>
       </div>

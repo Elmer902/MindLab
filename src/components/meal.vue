@@ -4,25 +4,26 @@ import { ref, onMounted, computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
 
-// Sample Meals
-const meals = ref([
-  { id: 1, name: 'Grapes', price: 2500, quantity: 1, image: new URL("@/assets/R.png", import.meta.url).href, totalPrice: 2500 },
-  { id: 2, name: 'Corn', price: 1500, quantity: 1, image: new URL("@/assets/corn.jpeg", import.meta.url).href, totalPrice: 1500 },
-  { id: 3, name: 'Cauliflower', price: 1800, quantity: 1, image: new URL("@/assets/cauliflower.jpeg", import.meta.url).href, totalPrice: 1800 },
-  { id: 4, name: 'Potatoes', price: 3000, quantity: 1, image: new URL("@/assets/potatoes.jpeg", import.meta.url).href, totalPrice: 3000 }
-]);
 
+// Meals List (Load from LocalStorage if available)
+const meals = ref([]);
 const cart = ref([]);
 const showCreateMealForm = ref(false);
-const newMeal = ref({ name: '', price: 0, image: '' });
-const searchQuery = ref(''); // Search input
+const searchQuery = ref('');
+const mealPlan = ref([]);
 
-// Load Cart from LocalStorage
+// Load Meals and Cart from LocalStorage
 onMounted(() => {
-  const storedCart = localStorage.getItem('mealCart');
-  if (storedCart) {
-    cart.value = JSON.parse(storedCart);
-  }
+  const storedMeals = JSON.parse(localStorage.getItem('meals')) || [
+    { id: 1, name: 'Grapes', price: 2500, quantity: 1, image: new URL("@/assets/R.png", import.meta.url).href },
+    { id: 2, name: 'Corn', price: 1500, quantity: 1, image: new URL("@/assets/corn.jpeg", import.meta.url).href },
+    { id: 3, name: 'Cauliflower', price: 1800, quantity: 1, image: new URL("@/assets/cauliflower.jpeg", import.meta.url).href },
+    { id: 4, name: 'Potatoes', price: 3000, quantity: 1, image: new URL("@/assets/potatoes.jpeg", import.meta.url).href }
+  ];
+  meals.value = storedMeals;
+
+  const storedCart = JSON.parse(localStorage.getItem('mealCart')) || [];
+  cart.value = storedCart;
 });
 
 // Computed property for filtered meals
@@ -33,107 +34,140 @@ const filteredMeals = computed(() => {
   );
 });
 
+// Save Meals to LocalStorage
+const saveMealsToLocalStorage = () => {
+  localStorage.setItem('meals', JSON.stringify(meals.value));
+};
+
 // Add to Cart
 const addToCart = (meal) => {
   const existingMeal = cart.value.find(item => item.id === meal.id);
   if (existingMeal) {
     existingMeal.quantity += meal.quantity;
-    existingMeal.totalPrice = existingMeal.quantity * existingMeal.price;
   } else {
     cart.value.push({ ...meal });
   }
-  saveCart();
+  localStorage.setItem('mealCart', JSON.stringify(cart.value));
 };
 
 // Remove from Meals List
 const removeFromMeals = (mealId) => {
   meals.value = meals.value.filter(item => item.id !== mealId);
+  saveMealsToLocalStorage();
 };
 
-// Save Cart to LocalStorage
-const saveCart = () => {
-  localStorage.setItem('mealCart', JSON.stringify(cart.value));
-};
 
-// Create New Meal
-const createMeal = () => {
-  if (!newMeal.value.name || newMeal.value.price <= 0 || !newMeal.value.image) {
-    alert('Please fill out all fields');
-    return;
+
+// Add meal to Meal Plan
+const addToMealPlan = (meal) => {
+  if (!mealPlan.value.find(item => item.id === meal.id)) {
+    mealPlan.value.push({ ...meal, duration: 1, total: meal.price });
   }
-  const newId = meals.value.length + 1;
-  meals.value.push({
-    id: newId,
-    name: newMeal.value.name,
-    price: newMeal.value.price,
-    quantity: 1,
-    image: newMeal.value.image,
-    totalPrice: newMeal.value.price
-  });
-  newMeal.value = { name: '', price: 0, image: '' };
-  showCreateMealForm.value = false;
+};
+
+// Update Meal Plan Total
+const updateMealPlanTotal = (meal) => {
+  meal.total = meal.duration * meal.price;
 };
 </script>
 
+
 <template>
-  <div>
+  <div class="bg-green-100 h-screen">
     <!-- Header -->
-    <div class="bg-green-900 justify-between text-center items-center relative w-auto left-0 top-0 flex p-5 px-10 md:ml-52 rounded-b-md">
-      <h1 class="text-2xl font-bold text-green-50">Meal Plans</h1>
+    <div class="bg-green-900 lg:space-x-20 fixed w-full left-0 top-0 flex items-center justify-between p-5 lg:px-20 lg:pl-56 lg:ml-38  rounded-br-md">
+      <h1 class="text-xl font-bold text-green-50 lg:flex  md:text-2xl  hidden">Meal Plans</h1>
 
       <!-- Search Input -->
       <input
         type="search"
         v-model="searchQuery"
-        placeholder="Search meal here..."
-        class="rounded-md p-2 border focus:outline-none focus:ring focus:border-green-500"
+        placeholder="Search meal"
+        class="rounded-md lg:p-2 border px-1 focus:outline-none focus:ring  ml-auto sm:flex  md:flex focus:border-green-500"
       >
 
-      <button
+      <RouterLink to="/newmeal">
+        <button
         @click="showCreateMealForm = true"
-        class="bg-blue-600 text-white py-1 px-2 rounded-md hover:bg-blue-700 transition"
+        class="bg-blue-600 text-white py-1 lg:px-2 ml-2 px-1 rounded-md hover:bg-blue-700 transition lg:ml-1 "
       >
         Create Meal
       </button>
+        </RouterLink>
     </div>
 
-    <!-- Create Meal Form -->
-    <div v-if="showCreateMealForm" class="p-4 bg-white shadow-md rounded-md mt-4 md:ml-56 mr-10">
-      <h2 class="text-lg font-bold py-4">Create a new Meal plan</h2>
-      <span>
-        <h2 class="text-green-500 text-xl font-semibold">Meal name</h2>
-        <input v-model="newMeal.name" type="text" class="w-full p-2 border rounded-md border-green-300 transform hover:scale-110">
-      </span>
-      <input v-model.number="newMeal.price" type="number" class="w-full p-2 border rounded-md my-2">
-      <input v-model="newMeal.image" type="text" class="w-full p-2 border rounded-md my-2">
-      <button @click="createMeal" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">Add Meal</button>
-      <button @click="showCreateMealForm = false" class="ml-2 text-white bg-red-500 px-4 rounded-md mx-2 py-2">Cancel</button>
-    </div>
 
     <!-- Meal Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:ml-56 my-10 mr-10">
+    <div class="md:flex sm:flex hidden  px-12  text-3xl font-bold">
+      <h1>Meal<span class="text-green-400">Plan</span></h1>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:ml-56 mx-10 pt-28 md:mt-2 lg:mr-10 lg:mt-0">
+
       <div
         v-for="meal in filteredMeals"
         :key="meal.id"
-        class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-transform hover:scale-105"
+        class="bg-white  rounded-lg shadow-md hover:shadow-lg transition-transform duration-300 hover:scale-105"
       >
-        <img :src="meal.image" alt="" class="w-full h-32 object-cover rounded-md">
-        <h2 class="text-lg font-bold mt-2">{{ meal.name }}</h2>
-        <p class="text-gray-600">Price: <span class="font-bold text-green-700">{{ meal.price }} XAF</span></p>
-
-        <!-- Add to Cart Button -->
-        <div class="flex justify-between text-center">
-          <RouterLink to="/mealplan">
-            <button
+        <div class="relative p-5">
+          <img :src="meal.image" alt="" class="w-full h-32 object-cover rounded-md">
+          <!-- + Button -->
+          <button
+            @click="addToMealPlan(meal)"
+            class="absolute top-2 right-2 bg-green-600 text-white rounded-full px-2 py-1 hover:bg-green-700"
+          >
+            +
+          </button>
+        </div>
+        <h2 class="text-lg font-bold mt-2 px-4">{{ meal.name }}</h2>
+        <p class="text-gray-600 px-5">Price: <span class="font-bold text-green-700">{{ meal.price }} XAF</span></p>
+  <hr class="py-3 mt-5 ">
+       <div class="md:justify-between flex  md:space-x-7 space-x-6 items-center bg-green-800 rounded-md md:p-5 p-2">
+        <RouterLink :to="`/mealplan/${meal.id}`">
+          <button
             @click="addToCart(meal)"
-            class="mt-3 px-2 bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition"
+            class="mt-3 lg:px-2 px-1 py-1 bg-green-600 text-white lg:py-2 rounded-md hover:bg-green-700 transition"
           >
             View meal
           </button>
+          </RouterLink>
+
+         <div class="justify-between items-center md:space-x-3 md:pt-2">
+          <RouterLink :to="`/edit-meal/${meal.id}`">
+            <button>
+                <i class="pi pi-pencil text-white"></i>
+              </button>
             </RouterLink>
-          <button @click="removeFromMeals(meal.id)" class="text-red-500"> <i class="pi pi-trash"></i></button>
-        </div>
+        <RouterLink>
+        <button @click="removeFromMeals(meal.id)" class="text-red-400 ">
+          <i class="pi pi-trash"></i>
+        </button>
+      </RouterLink>
+         </div>
+       </div>
       </div>
+    </div>
+
+    <!-- Meal Plan Table -->
+    <div v-if="mealPlan.length" class=" px-64 py-20 bg-green-100">
+      <h2 class="text-2xl font-bold mb-4">Your Meal Plan</h2>
+      <table class="w-full table-auto border-collapse">
+        <thead >
+          <tr class="bg-green-600 text-white">
+            <th class="px-4 py-2">Meal</th>
+            <th class="px-4 py-2">Number</th>
+            <th class="px-4 py-2">Total Price</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white">
+          <tr v-for="meal in mealPlan" :key="meal.id">
+            <td class="border px-6 py-2">{{ meal.name }}</td>
+            <td class="border px-4 py-2 bg-green-100" >
+              <input v-model.number="meal.duration" @input="updateMealPlanTotal(meal)" type="number" class="w-auto p-2 border rounded-md" />
+            </td>
+            <td class="border px-4 py-2 bg-green-400 font-semibold text-white">{{ meal.total }} XAF</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>

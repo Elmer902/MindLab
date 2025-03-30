@@ -23,9 +23,9 @@ const sendMessage = () => {
 </script>
 
 <template>
-  <div class="bg-green-50 h-screen flex flex-col md:ml-52">
-    <div class="bg-green-900 text-white py-4 px-6 text-lg font-bold flex justify-between items-center">
-      <span>Community Chat</span>
+  <div class="bg-green-50 h-screen flex flex-col lg:ml-52">
+    <div class="bg-green-900 text-white py-6 px-6 text-lg  font-bold flex justify-between items-center ">
+      <span class="ml-auto">Community Chat</span>
     </div>
     <div class="flex-1 overflow-y-auto p-4 space-y-3">
       <div v-for="msg in messages" :key="msg.id"

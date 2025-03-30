@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import heu from '@/assets/heu.png';
 import { RouterLink } from 'vue-router';
+import logo from '@/assets/logo.png';
 
 const email = ref('');
 const phone = ref('');
@@ -30,18 +31,17 @@ const handleSignup = () => {
 
 
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-100 px-4">
+  <div class="flex min-h-screen items-center justify-center bg-green-100 px-4 py-8">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex flex-col md:flex-row">
       <!-- Left Side - Illustration -->
       <div class="hidden md:flex md:w-1/2 bg-gray-800 px-8 py-3 flex-col justify-center items-center">
-        <span class="flex text-white text-5xl font-bold"><h1 class="text-green-800">Mind</h1>Lab</span>
+        <img :src="logo" alt="">
         <img :src="heu" alt="Illustration" class="w-full max-w-sm">
       </div>
 
       <!-- Right Side - Sign Up Form -->
-      <div class="w-full md:w-1/2 p-8">
-        <span class="flex md:hidden  text-gray-400 text-center justify-center pb-4 text-5xl font-bold"><h1 class="text-green-800">Mind</h1>Lab</span>
-
+      <div class="w-full md:w-1/2 p-8 justify-center items-center">
+        <img :src="logo" alt="" class="md:px-44 md:hidden flex px-20">
         <h2 class="text-2xl font-semibold text-gray-700 text-center">Sign Up</h2>
 
         <form @submit.prevent="handleSignup" class="mt-6">

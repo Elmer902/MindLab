@@ -6,7 +6,8 @@ import subscribeView from '@/views/subscribeView.vue';
 import homeView from '@/views/HomeView.vue';
 import signIn from '@/components/signIn.vue';
 import mealPlanView from '@/views/mealPlanView.vue';
-
+import EditMeal from '@/components/editMeal.vue';
+import newMeal from '@/components/newMeal.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -17,10 +18,22 @@ const router = createRouter({
       meta: { showSidebar: true }
     },
     {
-      path: '/mealplan',
-      name: 'mealplanview',
-      component: mealPlanView,
+      path: '/newmeal',
+      name: 'newmeal',
+      component: newMeal,
       meta: { showSidebar: true }
+    },
+    {
+      path: '/mealplan/:id',
+      name: 'mealplan',
+     component: mealPlanView,
+     meta: { showSidebar: true }
+    },
+    {
+      path: '/edit-meal/:id',
+      name: 'editplan',
+     component: EditMeal,
+     meta: { showSidebar: true }
     },
     {
       path: '/signin',
